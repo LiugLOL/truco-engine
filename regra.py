@@ -7,19 +7,17 @@ sem que as cartas jogadas estiverem NUMA LISTA >:(
 abraco, Quirino
 '''
 class Regra:
-    def __init__(self, cartas_jogadas, manilha):       
+    def __init__(self, cartas_jogadas, vira):       
         self.ordemNum = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3']
         self.cartas_jogadas = cartas_jogadas[:]
-        self.manilha = manilha
-        #logica proposta: sem manilha ainda, mas fazer o seguinte:
-        #ve qual numero tem o menor indice, pegar da carta o atriburo numero e comparar
-        #os indices, quem tiver o menor indice ganha, se tiver o mesmo indice apela pro
-        #naipe
+        #fazendo todas as manilhas
+        #logica proposta->pega o numero, soma +1 no indice, se o indice for 
+        #o ultimo tipo eh o 3, manilha eh 4, so isso
+        indiceManilha = self.ordemNum.index(vira.numero) + 1
+        self.manilha = self.ordemNum[indiceManilha % len(self.ordemNum)]
 
-        #selecionando 2 cartas do baralho
-
-    def duelo(self):
-        poder = [] #numero do jogador e qual carta lancou, indice 0 = jogador 1, indice 1 = jogador 2 e por ai vai, e ele vai retoranr o indice de qual eh o maior aqui
+    def briga(self):
+        poder = [] 
 
         for carta in self.cartas_jogadas:
             num = carta.numero
@@ -42,4 +40,5 @@ class Regra:
         else:
             maior = max(poder)
             vencedor = poder.index(maior)
+        
         return vencedor

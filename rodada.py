@@ -1,27 +1,29 @@
-import jogador
 import regra
 import baralho
 import random
 
 
 class Rodada:
-    def __init__(self):
+    def __init__(self, jog):
         self.baralho = baralho.Baralho()
-        self.numJogadores = 0
-        self.jogadores = []
+        self.jogadores = jog
         #manilha da rodada
-        indice = random.randint(0, 39)
+        indice = random.randint(0, len(self.baralho.cartas)-1)
         #seleciona o vira para ser depois a manilha, da pop pra carta virada
         #nao poder ser usada por jogadores durante a rodada, indisponivel
         #no baralho
         self.vira = self.baralho.select_card(indice)
-
-    def setJogadores(self, num):
-        self.numJogadores = num
-        for i in range(num):
-            player = jogador.Jogador()
-            player.setNome(i)
-            self.jogadores.append(player)
+        self.md3time1 = 0
+        self.md3time2 = 0
+        self.acabou = False
+        self.darCarta()
+    def darCarta(self):
+        for jogador in self.jogadores:
+            mao = []
+            for i in range(3):
+                carta = self.baralho.select_card(0)
+                mao.append(carta)
+            jogador.receberCartas(mao)
     
     '''
     O parametro INDICE da funcao jogada se refere a um vetor com os indices de
@@ -44,3 +46,21 @@ class Rodada:
         idxJogador = regra_obj.briga()
 
         return idxJogador
+
+    def adicionar_placar_time(self, time):
+        if time == 1:
+            self.md3time1 +=1
+        else:
+            self.md3time2 +=1
+        if self.placar_time(time) == 2:
+            self.acabou = True
+            
+
+    def placar_time(self, time):
+        if time == 1:
+            return self.md3time1
+        else:
+            return self.md3time2
+    def getAcabou(self):
+        return self.acabou
+

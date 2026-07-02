@@ -8,7 +8,6 @@ class Jogo:
             player.setNome(i)
             self.jogadores.append(player)
         self.partida = rodada.Rodada(self.jogadores)
-        self.partida.darCarta()
         self.pontosTime1 = 0
         self.pontosTime2 = 0
     def receberMao(self, indice):
@@ -35,7 +34,6 @@ class Jogo:
                 self.pontosTime2 += 1
 
             self.partida = rodada.Rodada(self.jogadores)
-            self.partida.darCarta()
         return retornar
     def checarVitoria(self):
         if self.pontosTime1 >= 12 or self.pontosTime2 >= 12:

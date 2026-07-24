@@ -1,5 +1,6 @@
-import regra
+import rodadinha
 import baralho
+import truco
 import random
 
 
@@ -16,6 +17,17 @@ class Rodada:
         self.md3time1 = 0
         self.md3time2 = 0
         self.acabou = False
+        self.truco = truco.Truco()
+        
+        # Rastrear rodadinhas (cada mão do MD3)
+        self.rodadinhas_time1 = 0
+        self.rodadinhas_time2 = 0
+        
+        # Sistema de ordem de jogo
+        self.rodadinha_atual = 1  # 1, 2 ou 3
+        self.quem_comecou_rodada = 0  # Qual jogador começou a rodada
+        self.proximo_a_jogar = 0  # Quem joga na próxima rodadinha
+        
         self.darCarta()
     def darCarta(self):
         for jogador in self.jogadores:
@@ -35,6 +47,10 @@ class Rodada:
     e ver quem ganhou o md3 atual.
     '''
     def jogada(self, indice):
+        """
+        Executa uma jogada com suporte a empardamento e descarte
+        Retorna: (vencedor_idx, empadou_na_primeira)
+        """
         cartasJogadas = []
 
         for i in range(len(self.jogadores)):
@@ -42,16 +58,55 @@ class Rodada:
             cartaAtual = jogadorAtual.jogarCarta(indice[i])
             cartasJogadas.append(cartaAtual)
 
-        regra_obj = regra.Regra(cartasJogadas, self.vira)
-        idxJogador = regra_obj.briga()
+        rodadinha_obj = rodadinha.Rodadinha(cartasJogadas, self.vira)
+        
+        # Verifica se empadou na primeira rodadinha
+        empadou_primeira, _ = rodadinha_obj.verificar_empardamento()
+        
+        if empadou_primeira and self.rodadinha_atual == 1:
+            # Primeira rodadinha: ambos ganham 1 ponto
+            self.rodadinhas_time1 += 1
+            self.rodadinhas_time2 += 1
+            self.proximo_a_jogar = 0  # Quem começou começa dnv
+            self.rodadinha_atual += 1
+            return -1, True  # -1 = empardou, True = empadou na primeira
+        
+        elif empadou_primeira and self.rodadinha_atual > 1:
+            # Rodadinha 2 ou 3: descartar empardalas e comparar próximas
+            cartas_restantes = rodadinha_obj.descartar_empardalas()
+            
+            if cartas_restantes:
+                # Recria Rodadinha com cartas restantes
+                rodadinha_obj = rodadinha.Rodadinha(cartas_restantes, self.vira)
+            else:
+                # Todas empardalas: ambos ganham 1
+                self.rodadinhas_time1 += 1
+                self.rodadinhas_time2 += 1
+                self.proximo_a_jogar = 0
+                self.rodadinha_atual += 1
+                return -1, True
+        
+        # Se não empadou, prossegue normalmente
+        idxJogador = rodadinha_obj.briga()
+        
+        if idxJogador != -1:
+            # Alguém venceu: registra ponto
+            if (idxJogador % 2) == 0:
+                self.rodadinhas_time1 += 1
+            else:
+                self.rodadinhas_time2 += 1
+            
+            # Próximo jogador a começar é o vencedor
+            self.proximo_a_jogar = idxJogador
+            self.rodadinha_atual += 1
+        
+        return idxJogador, False
 
-        return idxJogador
-
-    def adicionar_placar_time(self, time):
+    def adicionar_placar_time(self, time, valor_aposta=1):
         if time == 1:
-            self.md3time1 +=1
+            self.md3time1 += 1
         else:
-            self.md3time2 +=1
+            self.md3time2 += 1
         if self.placar_time(time) == 2:
             self.acabou = True
             
@@ -63,4 +118,28 @@ class Rodada:
             return self.md3time2
     def getAcabou(self):
         return self.acabou
+
+    def pedir_truco(self, time_que_pede, pontos_time1, pontos_time2):
+        """Tenta pedir truco"""
+        pode_pedir, motivo = self.truco.pode_pedir_truco(pontos_time1, pontos_time2)
+        
+        if not pode_pedir:
+            return {
+                "sucesso": False,
+                "motivo": motivo
+            }
+        
+        resultado = self.truco.pedir_truco(time_que_pede)
+        return {
+            "sucesso": resultado,
+            "valor": self.truco.get_valor() if resultado else None
+        }
+
+    def responder_truco(self, time_que_responde, resposta):
+        """Time responde ao pedido de truco"""
+        return self.truco.responder(time_que_responde, resposta)
+
+    def reset_truco(self):
+        """Reseta truco pra nova rodada"""
+        self.truco.reset()
 

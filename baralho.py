@@ -3,7 +3,7 @@ import carta
 class Baralho:
     def __init__(self):
         naipes = ["P", "C", "E", "O"]
-        numeros = ["A", 2, 3, 4, 5, 6, 7, "Q", "J", "K"]
+        numeros = ["4", "5", "6", "7", "Q", "J", "K", "A", "2", "3"]
         self.cartas = []
         for naipe in naipes:
             for numero in numeros:

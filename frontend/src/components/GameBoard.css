@@ -1,0 +1,104 @@
+.game-board {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.mesa {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: linear-gradient(135deg, #2d5016 0%, #1a3a0f 100%);
+  border-radius: 20px;
+  border: 8px solid #8b4513;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(0, 0, 0, 0.3);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  gap: 20px;
+  padding: 20px;
+}
+
+.player-position {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 15px;
+  min-height: 100px;
+}
+
+.player-name {
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 10px;
+  font-size: 0.9em;
+}
+
+.cards-display {
+  color: #ccc;
+  font-size: 0.8em;
+  text-align: center;
+}
+
+.player-position.top {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.player-position.left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.player-position.right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.player-position.bottom {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.player-position.you {
+  background: rgba(52, 152, 219, 0.2);
+  border: 2px solid #3498db;
+}
+
+.center {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.rodadinha-info {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.table-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 60px);
+  gap: 10px;
+  min-height: 80px;
+}
+
+.debug {
+  background: rgba(0, 0, 0, 0.8);
+  color: #0f0;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: monospace;
+  font-size: 0.8em;
+}

@@ -48,33 +48,33 @@ Projeto de férias: Engine de Truco Paulista para uso em web/API
 
 ---
 
-## 🔲 FASE 2: REST API - EM DESENVOLVIMENTO
+## ✅ FASE 2: REST API - EM DESENVOLVIMENTO
 
 ### API Structure
-- [ ] Estrutura base com Flask/FastAPI
-- [ ] Endpoints de game management
-- [ ] Endpoints de play actions
-- [ ] Serialização JSON de estado do jogo
-- [ ] Documentação Swagger/OpenAPI
+- [x] Estrutura base com FastAPI
+- [x] Endpoints de game management
+- [x] Endpoints de play actions
+- [x] Serialização JSON de estado do jogo
+- [x] Documentação Swagger/OpenAPI
 
 ### Melhorias para API
-- [ ] Type hints em todas as classes
-- [ ] Métodos to_dict() para serialização
-- [ ] Getters/Accessors para estado do jogo
-- [ ] Tratamento robusto de erros
-- [ ] Validações de entrada
+- [x] Pydantic models para serialização
+- [x] Getters/Accessors para estado do jogo
+- [x] Tratamento robusto de erros
+- [x] Validações de entrada
+- [x] Game manager para múltiplas partidas
 
 ### Deployment
 - [ ] Docker container
 - [ ] CI/CD pipeline
-- [ ] Testes automatizados
+- [x] Testes automatizados (pytest)
 
 ---
 
 ## 🛠️ Como Usar (Engine)
 
 ```python
-from jogo import Jogo
+from engine.jogo import Jogo
 
 # Criar jogo com 4 jogadores (2 times)
 game = Jogo(4)
@@ -94,18 +94,60 @@ vitoria = game.checarVitoria()
 
 ---
 
-## 📁 Estrutura
+---
+
+## 📁 Estrutura do Projeto
 
 ```
 truco-engine/
-├── carta.py           # Classe Carta
-├── baralho.py         # Classe Baralho
-├── jogador.py         # Classe Jogador
-├── rodadinha.py       # Comparação de cartas (1 rodadinha do MD3)
-├── rodada.py          # Gerencia MD3 (3 rodadinhas)
-├── truco.py           # Sistema de apostas
-├── jogo.py            # Orquestrador principal
-└── test_*.py          # Testes
+├── engine/                  ✅ Core game logic
+│   ├── jogo.py
+│   ├── rodada.py
+│   ├── rodadinha.py
+│   ├── truco.py
+│   ├── jogador.py
+│   ├── carta.py
+│   ├── baralho.py
+│   └── tests/              (Moved to tests/)
+├── api/                    ✅ REST API + WebSocket
+│   ├── main.py            (+ WebSocket)
+│   ├── models.py
+│   ├── game_manager.py
+│   ├── websocket.py
+│   └── database.py        (You'll implement)
+├── tests/                 ✅ All tests
+│   ├── test_api.py        (14 tests passing)
+│   ├── test_final.py
+│   ├── test_fase2.py
+│   ├── test_truco_completo.py
+│   ├── test_empardamento.py
+│   └── README.md
+├── frontend/              ✅ React app
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── App.css
+│   │   ├── main.jsx
+│   │   └── components/
+│   │       ├── GameBoard.jsx
+│   │       ├── HandCards.jsx
+│   │       ├── Lobby.jsx
+│   │       ├── Placar.jsx
+│   │       └── TrucoButtons.jsx
+│   ├── vite.config.js
+│   ├── package.json
+│   ├── index.html
+│   ├── README.md
+│   └── .gitignore
+├── run_api.py             ✅ Start server
+├── requirements.txt       ✅ Dependencies
+├── pytest.ini             ✅ Test config
+└── Documentation/
+    ├── API.md
+    ├── FRONTEND_README.md
+    ├── PLANO_CONCLUSAO.md
+    ├── GUIA_TESTES.md
+    ├── PROXIMOS_PASSOS.md
+    └── RESUMO_EXECUTIVO.md
 ```
 
 ---
@@ -124,10 +166,38 @@ truco-engine/
 
 ---
 
+## 🎮 REST API (NOVA!)
+
+Agora há uma REST API completa com FastAPI!
+
+### Quick Start
+```bash
+# Instalar dependências
+pip install -r requirements.txt
+
+# Rodar servidor
+python run_api.py
+
+# Acessar documentação interativa
+http://localhost:8000/docs
+```
+
+### Endpoints principais
+- `POST /games` - Criar novo jogo
+- `GET /games/{game_id}` - Obter estado do jogo
+- `POST /games/{game_id}/play` - Jogar rodada
+- `POST /games/{game_id}/truco` - Pedir truco
+- `POST /games/{game_id}/truco/response` - Responder truco
+
+Veja [API.md](API.md) para documentação completa.
+
+---
+
 ## 🚀 Próximos Passos
 
-1. Criar estrutura da REST API
-2. Implementar type hints
-3. Adicionar serialização JSON
-4. Testes de integração com API
-5. Deploy
+1. ✅ Criar estrutura da REST API
+2. [ ] Banco de dados (PostgreSQL/MongoDB)
+3. [ ] WebSocket para tempo real
+4. [ ] Autenticação
+5. [ ] Docker + CI/CD
+6. [ ] Deploy em produção

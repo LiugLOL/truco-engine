@@ -1,0 +1,25 @@
+.truco-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+.btn-truco {
+  width: 100%;
+  padding: 18px 30px;
+  font-size: 1.2em;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+}
+
+.button-group .btn {
+  flex: 1;
+  padding: 15px;
+  font-size: 1.1em;
+}

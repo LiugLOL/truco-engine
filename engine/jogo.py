@@ -1,5 +1,5 @@
-import rodada
-import jogador
+from . import rodada
+from . import jogador
 class Jogo:
     def __init__(self, numJogadores):
         self.jogadores = []

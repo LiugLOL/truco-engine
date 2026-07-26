@@ -1,6 +1,6 @@
-import rodadinha
-import baralho
-import truco
+from . import rodadinha
+from . import baralho
+from . import truco
 import random
 
 
@@ -142,4 +142,3 @@ class Rodada:
     def reset_truco(self):
         """Reseta truco pra nova rodada"""
         self.truco.reset()
-

@@ -1,25 +1,19 @@
-class Truco:
-    def __init__(self):
-        # valores da rodada do truco
-        self.progressao = [1, 3, 6, 9, 12]
-        
-        # indice da progressao
-        self.indice_atual = 0
-        
-        # qual time pediu?(1, 2)
-        self.time_que_pediu = None
-        
-        # Qual é a resposta? (aceito, corrido, contra, aguardando)
-        self.resposta = "aguardando"
-        
-        # Histórico de ofertas (pra debug/logs)
-        self.historico = []
+from typing import Tuple, Dict, List, Optional
 
-    def get_valor(self):
+
+class Truco:
+    def __init__(self) -> None:
+        self.progressao: List[int] = [1, 3, 6, 9, 12]
+        self.indice_atual: int = 0
+        self.time_que_pediu: Optional[int] = None
+        self.resposta: str = "aguardando"
+        self.historico: List[str] = []
+
+    def get_valor(self) -> int:
         """Retorna o valor atual da aposta"""
         return self.progressao[self.indice_atual]
 
-    def pode_pedir_truco(self, pontos_time1, pontos_time2):
+    def pode_pedir_truco(self, pontos_time1: int, pontos_time2: int) -> Tuple[bool, str]:
         """
         Verifica se é permitido pedir truco
         Bloqueia em mão de 11 e mão de ferro
@@ -29,41 +23,34 @@ class Truco:
             pontos_time2: Pontos do Time 2
         
         Returns:
-            tuple: (pode_pedir: bool, motivo: str)
+            Tuple[bool, str]: (pode_pedir, motivo)
         """
-        # Mão de 11: um time tem 11 e outro não
         if (pontos_time1 == 11 and pontos_time2 != 11) or (pontos_time2 == 11 and pontos_time1 != 11):
             return False, "Mão de 11! Não pode pedir truco"
         
-        # Mão de ferro: ambos com 11
         if pontos_time1 == 11 and pontos_time2 == 11:
             return False, "Mão de ferro! Não pode pedir truco"
         
         return True, "OK"
 
-    def pedir_truco(self, time_que_pediu):
+    def pedir_truco(self, time_que_pediu: int) -> bool:
         """
         Time tenta pedir truco
         
         Args:
-            time_que_pediu: 1 ou 2 (qual time está pedindo)
+            time_que_pediu: 1 ou 2
         
         Returns:
-            bool: True se conseguiu pedir, False se não pode
+            bool: True se conseguiu pedir
         """
-        # Só pode pedir se não tiver pedido antes nessa rodada
-        # ou se a resposta anterior foi 'aceito' e agora quer aumentar
-        
         if self.resposta == "aguardando":
-            # Primeira oferta da rodada
             self.time_que_pediu = time_que_pediu
             self.resposta = "aguardando_resposta"
-            valor_novo = self.get_valor()
+            valor_novo: int = self.get_valor()
             self.historico.append(f"Time {time_que_pediu} pediu {valor_novo} pontos")
             return True
         
         elif self.resposta == "aceito" and self.indice_atual < len(self.progressao) - 1:
-            # Pode aumentar a aposta se o outro time aceitar
             self.indice_atual += 1
             self.time_que_pediu = time_que_pediu
             self.resposta = "aguardando_resposta"
@@ -73,21 +60,20 @@ class Truco:
         
         return False
 
-    def responder(self, time_que_responde, resposta):
+    def responder(self, time_que_responde: int, resposta: str) -> Dict:
         """
         Time responde ao pedido de truco
         
         Args:
-            time_que_responde: 1 ou 2 (qual time está respondendo)
-            resposta: "aceito", "corrido" ou "truco" (contra)
+            time_que_responde: 1 ou 2
+            resposta: "aceito", "corrido" ou "truco"
         
         Returns:
-            dict: informações sobre o resultado
+            Dict: Resultado da resposta
         """
         if resposta == "aceito":
-            # Time aceita a nova aposta
             self.resposta = "aceito"
-            valor = self.get_valor()
+            valor: int = self.get_valor()
             self.historico.append(f"Time {time_que_responde} aceitou {valor} pontos")
             return {
                 "resultado": "aceito",
@@ -96,8 +82,7 @@ class Truco:
             }
         
         elif resposta == "corrido":
-            # Time desiste e perde a aposta ANTERIOR
-            valor_aposta_anterior = self.progressao[self.indice_atual - 1] if self.indice_atual > 0 else 1
+            valor_aposta_anterior: int = self.progressao[self.indice_atual - 1] if self.indice_atual > 0 else 1
             self.resposta = "corrido"
             self.historico.append(f"Time {time_que_responde} correu. Time {self.time_que_pediu} ganha {valor_aposta_anterior}")
             return {
@@ -108,12 +93,11 @@ class Truco:
             }
         
         elif resposta == "truco":
-            # Time faz uma contra-oferta (sobe um nível)
             if self.indice_atual < len(self.progressao) - 1:
                 self.indice_atual += 1
-                self.time_que_pediu = time_que_responde  # Agora quem pediu é o outro
+                self.time_que_pediu = time_que_responde
                 self.resposta = "aguardando_resposta"
-                valor_novo = self.get_valor()
+                valor_novo: int = self.get_valor()
                 self.historico.append(f"Time {time_que_responde} ofereceu {valor_novo} pontos (contra-oferta)")
                 return {
                     "resultado": "contra",
@@ -131,15 +115,15 @@ class Truco:
             "mensagem": "Resposta inválida"
         }
 
-    def reset(self):
-        """Reseta tudo pra nova rodada"""
+    def reset(self) -> None:
+        """Reseta tudo para nova rodada"""
         self.indice_atual = 0
         self.time_que_pediu = None
         self.resposta = "aguardando"
         self.historico = []
 
-    def get_status(self):
-        """Retorna o status atual do truco (pra debug)"""
+    def get_status(self) -> Dict:
+        """Retorna o status atual do truco para debug"""
         return {
             "valor_atual": self.get_valor(),
             "time_que_pediu": self.time_que_pediu,

@@ -24,7 +24,7 @@ The engine is designed to be:
 ## Features
 
 - ✅ Complete deck creation and randomized shuffling
-- ✅ Three-card hands for four players
+- ✅ Three-card hands for even players(e.g., 2 or 4 players)
 - ✅ Vira-based mobile-manilha resolution
 - ✅ Trick winner resolution with suit strength
 - ✅ Turn validation and card-index validation
@@ -170,7 +170,7 @@ The engine follows a layered game-flow architecture:
 
 - **Cards**: Define cards, suits, deck operations, and player-held cards
 - **Players**: Associate a player identifier with a `PlayerHand`
-- **Hand**: Coordinates four players, three tricks, turn validation, and team
+- **Hand**: Coordinates players, three tricks, turn validation, and team
   winner resolution
 - **Trick**: Compares cards, applies the vira-defined manilha, and resolves
   ties

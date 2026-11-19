@@ -1,3 +1,1 @@
-"""
-Pacote principal da src de Truco.
-"""
+"""Core package for the Truco game engine."""

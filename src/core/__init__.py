@@ -1,0 +1,1 @@
+"""Shared result and error types for the game engine."""

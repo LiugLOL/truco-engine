@@ -1,3 +1,5 @@
+"""Typed success and failure wrappers for domain operations."""
+
 from dataclasses import dataclass
 from typing import Generic, TypeAlias, TypeVar
 from src.core.error_types import ErrorType

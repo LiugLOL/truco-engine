@@ -1,3 +1,5 @@
+"""Deck construction, shuffling, and card drawing."""
+
 import random
 from typing import List
 from src.cards.card import Card
@@ -5,13 +7,17 @@ from src.cards.suits import Suits
 
 
 class Deck:
+    """Manage the complete Truco deck used to deal cards."""
+
     def __init__(self) -> None:
+        """Create, populate, and shuffle a new deck."""
         self.cards: List[Card] = []
         self.create_deck()
         self.shuffle()
 
 
     def create_deck(self) -> None:
+        """Populate the deck with every supported suit and rank combination."""
         suits: List[Suits] = [Suits.CLUBS, Suits.DIAMONDS, Suits.HEARTS, Suits.SPADES]
         numbers: List[str] = ["4", "5", "6", "7", "Q", "J", "K", "A", "2", "3"]
         for suit in suits:
@@ -20,8 +26,10 @@ class Deck:
 
 
     def shuffle(self):
+        """Randomize the order of the cards currently in the deck."""
         random.shuffle(self.cards)
 
 
     def draw(self):
+        """Remove and return the next card from the top of the deck."""
         return self.cards.pop()

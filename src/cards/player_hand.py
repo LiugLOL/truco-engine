@@ -1,8 +1,6 @@
 """Cards currently held by an individual player."""
 
 from dataclasses import dataclass, field
-
-from src.cards import card
 from src.cards.card import Card
 from src.core.error_types import ErrorType
 from src.core.result import Failure, InternalError, Result, Success

@@ -111,7 +111,7 @@ def test_next_trick_starts_with_trick_winner():
     hand = Hand(PLAYERS, make_deck(cards, card("A")))
     play_trick(hand, [(player, 0) for player in PLAYERS])
 
-    assert hand.current_trick.players_order == ["p2", "p3", "p0", "p1"]
+    assert hand.current_trick.current_players_order == ["p2", "p3", "p0", "p1"]
 
 
 def test_team_one_wins_after_three_tricks_with_a_turnaround():
@@ -180,7 +180,7 @@ def test_three_tied_tricks_finish_without_a_winner():
     cards = {player: [card("6"), card("6"), card("6")] for player in PLAYERS}
     hand = Hand(PLAYERS, make_deck(cards, card("A")))
     for _ in range(3):
-        play_trick(hand, [(player, 0) for player in hand.current_trick.players_order])
+        play_trick(hand, [(player, 0) for player in hand.current_trick.current_players_order])
 
     assert hand.finished is True
     assert hand.winner is None
@@ -196,5 +196,5 @@ def test_turn_card_manilha_beats_a_three_in_hand():
     hand = Hand(PLAYERS, make_deck(cards, card("4", Suits.HEARTS)))
     play_trick(hand, [(player, 0) for player in PLAYERS])
 
-    assert hand.current_trick.players_order == ["p1", "p2", "p3", "p0"]
+    assert hand.current_trick.current_players_order == ["p1", "p2", "p3", "p0"]
     assert hand.trick_winners == [1]

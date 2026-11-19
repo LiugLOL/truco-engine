@@ -59,6 +59,7 @@ class Trick:
             turn_card: Vira card that defines the mobile manilha.
         """
         self.players_order = players_order
+        self.current_players_order = players_order
         self.plays: list[Card] = []
         self.manilha = self._get_manilha(turn_card)
         self.result: TrickResult | None = None

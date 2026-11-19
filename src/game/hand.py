@@ -52,7 +52,7 @@ class Hand:
             players_order: Ordered player identifiers alternating by team.
             deck: Optional deck implementation used for dealing and the vira.
         """
-        self.players_order = players_order
+        self.current_players_order = players_order
         self.deck = deck if deck is not None else Deck()
         self.hands: dict[str, PlayerHand] = {}
         for player_id in players_order:
@@ -64,7 +64,7 @@ class Hand:
         self.turn_card = self.deck.draw()
         self.trick_winners: list[int | None] = []
         self.winner : int | None = None
-        self.current_trick = trick.Trick(self.players_order, self.turn_card)
+        self.current_trick = trick.Trick(self.current_players_order, self.turn_card)
         self.finished: bool = False
 
     def play_card(self, player_id: str, card_index: int) -> Result[trick.PlayResult]:
@@ -110,10 +110,10 @@ class Hand:
                 next_order = self.current_trick.players_order
             else:
                 winner_id = self.current_trick.players_order[trick_result.winner_index]
-                winning_team = self.players_order.index(winner_id) % 2
+                winning_team = self.current_players_order.index(winner_id) % 2
                 #Rotates the table to start from the winner of the trick
-                start_idx = self.players_order.index(winner_id)
-                next_order = self.players_order[start_idx:] + self.players_order[:start_idx]
+                start_idx = self.current_players_order.index(winner_id)
+                next_order = self.current_players_order[start_idx:] + self.current_players_order[:start_idx]
 
             self.trick_winners.append(winning_team)
             self.winner = _resolve_winner(self.trick_winners)

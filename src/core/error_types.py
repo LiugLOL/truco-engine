@@ -21,3 +21,11 @@ class ErrorType(Enum):
     #Match errors
     INVALID_PLAYERS_NUMBER = "invalid_players_number"
     MATCH_ALREADY_FINISHED = "match_already_finished"
+    INVALID_PLAYER = "invalid_player"
+
+    #Betting errors
+    SAME_TEAM_RAISE = "same_team_raise"
+    OUT_OF_RAISING_INDEX = "out_of_raising_index"
+    INVALID_RAISE = "invalid_raise"
+    NO_PENDING_RAISE = "no_pending_raise"
+    PENDING_RAISE = "pending_raise"

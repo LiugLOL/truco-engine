@@ -67,6 +67,7 @@ class Hand:
         self.current_trick = trick.Trick(self.current_players_order, self.turn_card)
         self.finished: bool = False
 
+
     def play_card(self, player_id: str, card_index: int) -> Result[trick.PlayResult]:
         """Play one card and advance the hand state.
 

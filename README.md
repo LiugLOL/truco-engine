@@ -4,8 +4,8 @@ A reusable, transport-independent Truco game engine for card-game applications.
 
 > **Project status: under active development.** This repository is public for
 > collaboration and early testing. Core hand and match flows are implemented,
-> but the API may change as Truco variants, match scoring, and higher-level
-> integrations are completed.
+> but the API may change as special hand rules (Mão de 11 / Mão de Ferro) and
+> multiplayer serialization are completed.
 
 ## Overview
 
@@ -32,7 +32,9 @@ The engine is designed to be:
 - ✅ Tie handling across all three tricks
 - ✅ Typed `Success`/`Failure` results with structured error types
 - ✅ Basic 12-point match orchestration
-- ✅ One-point hand scoring and table rotation
+- ✅ Truco betting escalation (1 -> 3 -> 6 -> 9 -> 12) with accept, fold, and re-raise handling
+- ✅ Dynamic hand scoring (1, 3, 6, 9, or 12 points)
+- ✅ Hand scoring and table rotation
 - ✅ Stable team assignment for players after table rotations
 - ✅ Match completion and `MATCH_ALREADY_FINISHED` protection
 - ✅ Support for even player counts, including 2-player matches
@@ -52,12 +54,13 @@ src/
 │   ├── error_types.py    # Domain error categories
 │   └── result.py         # Success, Failure, and InternalError wrappers
 ├── game/                 # Hand and trick orchestration
+│   ├── betting.py        # Truco bidding and raise escalation
 │   ├── hand.py           # Hand lifecycle and team winner resolution
 │   ├── match.py          # Match-level orchestration boundary
 │   └── trick.py          # Trick ranking and manilha rules
 ├── players/              # Player identity models
 │   └── player.py         # Player identifier and hand association
-tests/                    # Unit tests (29 passing)
+tests/                    # Unit tests (66 passing)
 ```
 
 ## Installation
@@ -87,15 +90,21 @@ source .venv/bin/activate
 .\.venv\Scripts\activate
 ```
 
+### Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
 ## Running Tests
 
 Execute the test suite with pytest:
 
 ```bash
-.\.venv\Scripts\pytest
+python -m pytest
 ```
 
-The project currently contains **29 passing unit tests** covering card
+The project currently contains **66 passing unit tests** covering card
 ranking, trick resolution, hand flow, match scoring, table rotation, validation
 failures, tie handling, mobile manilhas, match completion, and 2-player matches.
 
@@ -135,7 +144,8 @@ result = hand.play_card("p0", 0)
 
 ## Match Usage
 
-`Match` coordinates hands and awards one point to the team that wins each hand:
+`Match` coordinates hands and uses `Betting` to apply the stake of each hand.
+Hands start at 1 point and can escalate to 3, 6, 9, or 12 points:
 
 ```python
 from src.game.match import Match
@@ -148,11 +158,14 @@ result = match.play_card("p0", 0)
 
 After a hand finishes:
 
-- the winning team receives one point;
+- the winning team receives the hand stake set by `Betting`;
 - tied hands do not award points;
 - the table rotates one position to the left;
 - a new `Hand` starts with the rotated player order;
 - the match finishes when a team reaches 12 points.
+
+Raise requests can be accepted or folded through `Match.request_raise`,
+`Match.accept_raise`, and `Match.fold_raise`.
 
 For deterministic tests and controlled games, provide a `deck_factory`:
 
@@ -174,6 +187,8 @@ The engine follows a layered game-flow architecture:
   winner resolution
 - **Trick**: Compares cards, applies the vira-defined manilha, and resolves
   ties
+- **Betting**: Escalates hand stakes through 1, 3, 6, 9, and 12 points, and
+  handles accepted raises, folds, re-raises, and edge-case forfeits
 - **Match**: Scores hands to 12 points, rotates the table, and blocks play after
   match completion
 - **Core Results**: Communicate success or expected domain failures explicitly
@@ -185,8 +200,10 @@ The main runtime flow is:
 3. `Trick` evaluates cards using the standard order and mobile-manilha power.
 4. `Hand` records the trick result and rotates the next trick to its winner.
 5. After two decisive tricks, or after the third trick, the hand finishes.
-6. `Match` adds one point to the winning team or rotates the table after a tie.
-7. `Match` starts a fresh hand unless a team has reached 12 points.
+6. `Match` applies the `Betting` stake to the winning team or rotates the table
+   after a tie.
+7. `Match` starts a fresh hand with 1-point stakes unless a team has reached
+   12 points.
 
 ## Design Goals
 
@@ -204,15 +221,16 @@ The engine currently supports complete hand and basic match lifecycles for
 even player counts. The implemented match flow is:
 
 - `points` begins at `[0, 0]`;
-- each hand winner awards one point;
+- each hand winner awards the dynamic stake of 1, 3, 6, 9, or 12 points;
 - ties award no points;
 - the table rotates after every completed hand;
 - team ownership remains stable after rotation;
 - 12 points finishes the match and prevents further card plays.
 
 Issue [#4 - Implement basic 12-point Match orchestration](https://github.com/LiugLOL/truco-engine/issues/4)
-is closed. Match-level one-point scoring is therefore considered implemented
-and covered by unit tests.
+and Issue [#2 - Implement Truco betting and raise escalation](https://github.com/LiugLOL/truco-engine/issues/2)
+are closed. Dynamic Match scoring through `Betting` and 12-point match completion
+are therefore implemented and covered by unit tests.
 
 ## Roadmap
 
@@ -221,13 +239,13 @@ and covered by unit tests.
 - [x] Hand lifecycle, turn validation, rotations, and tie handling
 - [x] Basic 12-point match orchestration (#4)
 - [x] Deterministic match tests with injected decks
-- [ ] Truco bidding and raise escalation rules
-- [ ] Score variants and configurable match targets
-- [ ] Additional Truco regional rule variants
-- [ ] Public API cleanup and semver guarantees
+- [x] Truco bidding and raise escalation rules
+- [ ] Hand of 11 and Hand of Iron (Mão de 11 / Mão de Ferro)
+- [ ] Public/private match state serialization for multiplayer
+- [ ] Post-MVP table rules ("3 segue" verification and "pegar pena" cut)
+- [ ] Transport/network adapters outside the core engine
 - [ ] Package and distribution setup
 - [ ] Documentation, examples, and integration guides
-- [ ] Transport/network and UI adapters outside the core engine
 
 ## License
 

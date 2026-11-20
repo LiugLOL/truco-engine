@@ -122,4 +122,22 @@ class Match:
             self._finish_hand(result.value.winner_team)
         return result
 
+    def get_state(self, player_id: str, blind_hand: bool = False) -> Result[dict]:
+        if player_id not in self.team_by_player:
+            return Failure(
+                InternalError(
+                    code=ErrorType.INVALID_PLAYER,
+                    message=f"Player {player_id} is not on the game.",
+                )
+            )
 
+        return Success(
+            {
+                "points": list(self.points),
+                "teams": dict(self.team_by_player),
+                "finished": self.finished,
+                "winner": self.winner,
+                "betting": self.betting.to_dict(),
+                "hand": self.current_hand.to_dict(player_id, blind_hand=blind_hand),
+            }
+        )

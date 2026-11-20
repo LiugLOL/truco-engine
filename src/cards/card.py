@@ -15,3 +15,10 @@ class Card:
 
     suit: Suits
     number: str
+
+    def to_dict(self) -> dict:
+        """Convert this card to JSON-ready primitive values."""
+        return {
+            "suit": self.suit.name,
+            "number": self.number
+        }

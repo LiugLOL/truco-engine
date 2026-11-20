@@ -103,3 +103,21 @@ class Betting:
     @property
     def current_value(self) -> int:
         return HAND_VALUES[self.value_index]
+
+    def to_dict(self) -> dict:
+        return {
+            "current_value": self.current_value,
+            "pending": self.pending,
+            "pending_value": (
+                HAND_VALUES[self.pending_value_index]
+                if self.pending_value_index is not None
+                else None
+            ),
+            "requester_team": self.requester_team,
+            "awaiting_response_from_team": (
+                1 - self.requester_team
+                if self.requester_team is not None
+                else None
+            ),
+            "last_raising_team": self.last_raising_team,
+        }

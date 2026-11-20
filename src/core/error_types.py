@@ -29,3 +29,4 @@ class ErrorType(Enum):
     INVALID_RAISE = "invalid_raise"
     NO_PENDING_RAISE = "no_pending_raise"
     PENDING_RAISE = "pending_raise"
+

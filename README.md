@@ -4,8 +4,8 @@ A reusable, transport-independent Truco game engine for card-game applications.
 
 > **Project status: under active development.** This repository is public for
 > collaboration and early testing. Core hand and match flows are implemented,
-> but the API may change as special hand rules (Mão de 11 / Mão de Ferro) and
-> multiplayer serialization are completed.
+> but the API may change as special hand rules (Mão de 11 / Mão de Ferro) are
+> completed.
 
 ## Overview
 
@@ -35,6 +35,8 @@ The engine is designed to be:
 - ✅ Truco betting escalation (1 -> 3 -> 6 -> 9 -> 12) with accept, fold, and re-raise handling
 - ✅ Dynamic hand scoring (1, 3, 6, 9, or 12 points)
 - ✅ Hand scoring and table rotation
+- ✅ Public/private match state serialization through `Match.get_state`
+- ✅ Blind-hand serialization support for hidden/private card views
 - ✅ Stable team assignment for players after table rotations
 - ✅ Match completion and `MATCH_ALREADY_FINISHED` protection
 - ✅ Support for even player counts, including 2-player matches
@@ -60,7 +62,7 @@ src/
 │   └── trick.py          # Trick ranking and manilha rules
 ├── players/              # Player identity models
 │   └── player.py         # Player identifier and hand association
-tests/                    # Unit tests (66 passing)
+tests/                    # Unit tests (72 passing)
 ```
 
 ## Installation
@@ -104,9 +106,10 @@ Execute the test suite with pytest:
 python -m pytest
 ```
 
-The project currently contains **66 passing unit tests** covering card
+The project currently contains **72     passing unit tests** covering card
 ranking, trick resolution, hand flow, match scoring, table rotation, validation
-failures, tie handling, mobile manilhas, match completion, and 2-player matches.
+failures, tie handling, mobile manilhas, match completion, betting, 2-player
+matches, and public/private state serialization.
 
 ## Basic Usage
 
@@ -167,6 +170,17 @@ After a hand finishes:
 Raise requests can be accepted or folded through `Match.request_raise`,
 `Match.accept_raise`, and `Match.fold_raise`.
 
+For multiplayer transports, use `Match.get_state(player_id, blind_hand=False)`
+to receive a JSON-ready snapshot. The snapshot includes public match and table
+state plus only the requesting player's cards; all other players are represented
+by identifier and card count. Pass `blind_hand=True` to hide the requesting
+player's cards:
+
+```python
+state = match.get_state("p0")
+blind_state = match.get_state("p0", blind_hand=True)
+```
+
 For deterministic tests and controlled games, provide a `deck_factory`:
 
 ```python
@@ -191,6 +205,8 @@ The engine follows a layered game-flow architecture:
   handles accepted raises, folds, re-raises, and edge-case forfeits
 - **Match**: Scores hands to 12 points, rotates the table, and blocks play after
   match completion
+- **Serialization**: Converts cards, betting, hands, and match snapshots into
+  JSON-ready primitives while restricting private hand information
 - **Core Results**: Communicate success or expected domain failures explicitly
 
 The main runtime flow is:
@@ -227,10 +243,19 @@ even player counts. The implemented match flow is:
 - team ownership remains stable after rotation;
 - 12 points finishes the match and prevents further card plays.
 
+Issue [#1 - Add project dependencies, gitignore rules, and base unit tests](https://github.com/LiugLOL/truco-engine/issues/1)
+is closed. The repository now includes a `pytest` requirements file, dependency
+installation instructions, ignored local tool artifacts, and dedicated `Deck`
+and `PlayerHand` unit tests.
+
 Issue [#4 - Implement basic 12-point Match orchestration](https://github.com/LiugLOL/truco-engine/issues/4)
 and Issue [#2 - Implement Truco betting and raise escalation](https://github.com/LiugLOL/truco-engine/issues/2)
 are closed. Dynamic Match scoring through `Betting` and 12-point match completion
 are therefore implemented and covered by unit tests.
+
+Issue [#7 - Public/private match state serialization](https://github.com/LiugLOL/truco-engine/issues/7)
+is also closed. `Match.get_state` now provides JSON-ready public/private snapshots
+with player-specific hand visibility and blind-hand support.
 
 ## Roadmap
 
@@ -240,8 +265,8 @@ are therefore implemented and covered by unit tests.
 - [x] Basic 12-point match orchestration (#4)
 - [x] Deterministic match tests with injected decks
 - [x] Truco bidding and raise escalation rules
+- [x] Public/private match state serialization for multiplayer
 - [ ] Hand of 11 and Hand of Iron (Mão de 11 / Mão de Ferro)
-- [ ] Public/private match state serialization for multiplayer
 - [ ] Post-MVP table rules ("3 segue" verification and "pegar pena" cut)
 - [ ] Transport/network adapters outside the core engine
 - [ ] Package and distribution setup

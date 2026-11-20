@@ -125,3 +125,44 @@ class Hand:
                 self.current_trick = trick.Trick(next_order, self.turn_card)
 
         return play_result
+
+    def to_dict(self, player_id: str, blind_hand: bool = False) -> dict:
+        current_turn = (
+            None
+            if self.finished
+            else self.current_trick.players_order[len(self.current_trick.plays)]
+        )
+
+        table_cards = [
+            {
+                "player_id": self.current_trick.players_order[i],
+                "card": card.to_dict(),
+            }
+            for i, card in enumerate(self.current_trick.plays)
+        ]
+
+        my_hand = (
+            []
+            if blind_hand
+            else [card.to_dict() for card in self.hands[player_id].cards]
+        )
+
+        players = [
+            {
+                "player_id": pid,
+                "cards_count": len(self.hands[pid].cards),
+            }
+            for pid in self.current_players_order
+        ]
+
+        return {
+            "vira": self.turn_card.to_dict(),
+            "manilha": self.current_trick.manilha,
+            "current_turn": current_turn,
+            "table_cards": table_cards,
+            "trick_wins": list(self.trick_winners),
+            "finished": self.finished,
+            "winner": self.winner,
+            "my_hand": my_hand,
+            "players": players,
+        }

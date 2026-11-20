@@ -58,7 +58,7 @@ class Trick:
             players_order: Player sequence for this trick.
             turn_card: Vira card that defines the mobile manilha.
         """
-        self.players_order = players_order
+        self.players_order = list(players_order)
         self.current_players_order = players_order
         self.plays: list[Card] = []
         self.manilha = self._get_manilha(turn_card)

@@ -14,7 +14,7 @@ def _turn_table(players_order) -> list[str]:
 
 class Match:
     def __init__(self, players_order: list[str], deck_factory: Callable[[], Deck] = Deck):
-        if len(players_order)%2 != 0 and len(players_order) == 0:
+        if len(players_order)%2 != 0 or len(players_order) == 0:
             raise ValueError("Truco requires an even and positive number of players.")
         if len(set(players_order)) != len(players_order):
             raise ValueError("Truco requires unique players.")

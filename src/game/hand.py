@@ -55,7 +55,7 @@ class Hand:
             players_order: Ordered player identifiers alternating by team.
             deck: Optional deck implementation used for dealing and the vira.
         """
-        self.current_players_order = players_order
+        self.current_players_order = list(players_order)
         self.team_by_player = dict(team_by_player) if team_by_player is not None else {pid: i %2 for i, pid in enumerate(players_order)}
         self.deck = deck if deck is not None else Deck()
         self.hands: dict[str, PlayerHand] = {}

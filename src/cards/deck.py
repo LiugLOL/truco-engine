@@ -18,6 +18,7 @@ class Deck:
 
     def create_deck(self) -> None:
         """Populate the deck with every supported suit and rank combination."""
+        self.cards.clear()
         suits: List[Suits] = [Suits.CLUBS, Suits.DIAMONDS, Suits.HEARTS, Suits.SPADES]
         numbers: List[str] = ["4", "5", "6", "7", "Q", "J", "K", "A", "2", "3"]
         for suit in suits:

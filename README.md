@@ -106,7 +106,7 @@ Execute the test suite with pytest:
 python -m pytest
 ```
 
-The project currently contains **72     passing unit tests** covering card
+The project currently contains **72 passing unit tests** covering card
 ranking, trick resolution, hand flow, match scoring, table rotation, validation
 failures, tie handling, mobile manilhas, match completion, betting, 2-player
 matches, and public/private state serialization.
@@ -256,6 +256,12 @@ are therefore implemented and covered by unit tests.
 Issue [#7 - Public/private match state serialization](https://github.com/LiugLOL/truco-engine/issues/7)
 is also closed. `Match.get_state` now provides JSON-ready public/private snapshots
 with player-specific hand visibility and blind-hand support.
+
+Issue [#8 - Preserve permanent player-to-team mapping across table rotations](https://github.com/LiugLOL/truco-engine/issues/8)
+is closed. The engine now keeps team ownership tied to player IDs across hands,
+so rotating the table no longer inverts team attribution or misassigns scores.
+`Match` validates even, non-empty rosters with unique player IDs, and multi-hand
+flows preserve correct trick winners, hand scoring, and match completion.
 
 ## Roadmap
 

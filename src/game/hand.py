@@ -38,14 +38,17 @@ def _resolve_winner(trick_winners: list[int | None]) -> int | None:
     third = trick_winners[2]
     if third is not None:
         return third
-    # third tied, the team who made first takes it, or 0 if everything tied
+
     return first
 
 
 class Hand:
     """Manage four players, their cards, and the tricks in one hand."""
 
-    def __init__(self, players_order: list[str], deck: Deck | None = None):
+    def __init__(self,
+                 players_order: list[str],
+                 deck: Deck | None = None,
+                 team_by_player:dict[str, int] | None = None,):
         """Deal cards and initialize the first trick.
 
         Args:
@@ -53,6 +56,7 @@ class Hand:
             deck: Optional deck implementation used for dealing and the vira.
         """
         self.current_players_order = players_order
+        self.team_by_player = dict(team_by_player) if team_by_player is not None else {pid: i %2 for i, pid in enumerate(players_order)}
         self.deck = deck if deck is not None else Deck()
         self.hands: dict[str, PlayerHand] = {}
         for player_id in players_order:
@@ -111,7 +115,7 @@ class Hand:
                 next_order = self.current_trick.players_order
             else:
                 winner_id = self.current_trick.players_order[trick_result.winner_index]
-                winning_team = self.current_players_order.index(winner_id) % 2
+                winning_team = self.team_by_player[winner_id]
                 #Rotates the table to start from the winner of the trick
                 start_idx = self.current_players_order.index(winner_id)
                 next_order = self.current_players_order[start_idx:] + self.current_players_order[:start_idx]

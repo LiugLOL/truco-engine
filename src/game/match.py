@@ -14,10 +14,14 @@ def _turn_table(players_order) -> list[str]:
 
 class Match:
     def __init__(self, players_order: list[str], deck_factory: Callable[[], Deck] = Deck):
+        if len(players_order)%2 != 0 and len(players_order) == 0:
+            raise ValueError("Truco requires an even and positive number of players.")
+        if len(set(players_order)) != len(players_order):
+            raise ValueError("Truco requires unique players.")
         self.deck_factory = deck_factory
-        self.players_order = list(players_order) # I'M TRUSTING THAT AN EVEN NUMBER OF PLAYERS ARE ON THE GAME!!
+        self.players_order = list(players_order)
         self.team_by_player = {player: i % 2 for i, player in enumerate(players_order)}
-        self.current_hand = hand.Hand(self.players_order, self.deck_factory())
+        self.current_hand = hand.Hand(self.players_order, self.deck_factory(), team_by_player=self.team_by_player)
         self.betting = betting.Betting()
         self.points:list[int] = [0,0]
         self.finished: bool = False
@@ -42,11 +46,7 @@ class Match:
         if isinstance(hand_result, Failure):
             return hand_result
         if self.current_hand.finished:
-            winning_team = None
-            if self.current_hand.winner is not None:
-                winner_player = self.current_hand.current_players_order[self.current_hand.winner]
-                winning_team = self.team_by_player[winner_player]
-            self._finish_hand(winning_team)
+            self._finish_hand(self.current_hand.winner)
         return Success(hand_result.value)
 
 
@@ -59,7 +59,7 @@ class Match:
                 self.winner = winning_team
                 return
         self.players_order = _turn_table(self.players_order)
-        self.current_hand = hand.Hand(self.players_order, self.deck_factory())
+        self.current_hand = hand.Hand(self.players_order, self.deck_factory(), team_by_player=self.team_by_player)
         self.betting = betting.Betting()
 
     def request_raise(self, player_id: str) -> Result:

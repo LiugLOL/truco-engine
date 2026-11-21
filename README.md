@@ -26,7 +26,7 @@ It does not include networking, UI, or application-framework dependencies.
 - Stable team ownership after table rotations
 - Public/private and blind-hand state serialization
 - Deterministic deck injection through `deck_factory`
-- 72 unit tests
+- Comprehensive unit and contract-boundary tests
 
 ## Project Structure
 
@@ -48,6 +48,7 @@ src/
 
 tests/
 ├── test_betting.py
+├── test_contract_boundaries.py
 ├── test_deck.py
 ├── test_hand.py
 ├── test_match.py
@@ -71,7 +72,13 @@ python -m venv .venv
 # macOS/Linux
 source .venv/bin/activate
 
-pip install -r requirements.txt
+python -m pip install -e ".[dev]"
+```
+
+To install only the package:
+
+```bash
+python -m pip install -e .
 ```
 
 ## Running Tests
@@ -80,9 +87,9 @@ pip install -r requirements.txt
 python -m pytest
 ```
 
-The suite currently contains 72 tests covering cards, deck handling, player
-hands, trick ranking, hand flow, betting, match scoring, table rotation,
-two-player matches, and state serialization.
+The suite covers cards, deck handling, player hands, trick ranking, hand flow,
+betting, match scoring, table rotation, two-player matches, state serialization,
+and adversarial public-contract boundaries.
 
 ## Basic Usage
 
@@ -104,6 +111,8 @@ For deterministic tests, pass a deck instance to `Hand` or a deck factory to
 
 ```python
 hand = Hand(players, deck=my_deterministic_deck)
+
+from src.game.match import Match
 
 match = Match(
     players,
@@ -181,7 +190,7 @@ The runtime flow is:
 - [ ] Mão de 11 and Mão de Ferro
 - [ ] Post-MVP table rules ("3 segue" and "pegar pena")
 - [ ] Transport/network adapters
-- [ ] Package and distribution setup
+- [x] Package and distribution setup
 - [ ] Integration guides and examples
 
 ## License

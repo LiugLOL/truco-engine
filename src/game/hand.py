@@ -120,6 +120,13 @@ class Hand:
             )
 
         expected_player = self.current_trick.current_player
+        if expected_player is None:
+            return Failure(
+                InternalError(
+                    code=ErrorType.INVALID_TRICK_RESULT,
+                    message="Cannot add a play to a finished trick.",
+                )
+            )
         if player_id != expected_player:
             return Failure(
                 InternalError(
@@ -131,7 +138,6 @@ class Hand:
         card_result = self.hands[player_id].play_card(card_index)
         if isinstance(card_result, Failure):
             return card_result
-
 
         play_result = self.current_trick.add_play(card_result.value)
         if isinstance(play_result, Failure):

@@ -38,7 +38,7 @@ class Match:
                     message="Cannot play a card in a finished match.",
                 )
             )
-        if self.betting.pending:
+        if self.betting.has_pending_raise:
             return Failure(
                 InternalError(
                     code=ErrorType.PENDING_RAISE,
@@ -83,8 +83,12 @@ class Match:
             )
         return Success(self.team_by_player[player_id])
 
-
     def request_raise(self, player_id: str) -> Result[betting.RaiseResult]:
+        """Request or escalate a raise on behalf of the player's team.
+
+        Any seated player may initiate or escalate a raise regardless of card-play
+        turn order, provided their team is eligible under the betting rules.
+        """
         validation = self._validate_betting_action(player_id, "request a raise")
         if isinstance(validation, Failure):
             return validation

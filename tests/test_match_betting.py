@@ -1,8 +1,8 @@
 import pytest
 
-from src.core.error_types import ErrorType
-from src.core.result import Failure, Success
-from src.game.match import Match
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, Success
+from truco_engine.game.match import Match
 from tests.test_match import PLAYERS, play_entire_hand, team_zero_deck
 
 

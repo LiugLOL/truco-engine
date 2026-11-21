@@ -1,8 +1,8 @@
 """Deck construction, shuffling, and card drawing."""
 
 import random
-from src.cards.card import Card
-from src.cards.suits import Suits
+from truco_engine.cards.card import Card
+from truco_engine.cards.suits import Suits
 
 
 class Deck:

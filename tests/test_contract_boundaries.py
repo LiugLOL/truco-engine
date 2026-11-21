@@ -3,16 +3,16 @@ from dataclasses import FrozenInstanceError
 
 import pytest
 
-from src.cards.card import Card
-from src.cards.deck import Deck
-from src.cards.player_hand import PlayerHand
-from src.cards.suits import Suits
-from src.core.error_types import ErrorType
-from src.core.result import Failure, Success
-from src.game.betting import Betting
-from src.game.hand import Hand, _resolve_winner
-from src.game.match import Match
-from src.game.trick import TrickResult
+from truco_engine.cards.card import Card
+from truco_engine.cards.deck import Deck
+from truco_engine.cards.player_hand import PlayerHand
+from truco_engine.cards.suits import Suits
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, Success
+from truco_engine.game.betting import Betting
+from truco_engine.game.hand import Hand, _resolve_winner
+from truco_engine.game.match import Match
+from truco_engine.game.trick import Trick, TrickResult
 from tests.test_match import PLAYERS, team_zero_deck
 
 
@@ -110,6 +110,19 @@ def test_card_is_immutable():
         card.number = "5"
 
 
+@pytest.mark.parametrize("invalid_card", [None, "4c", 0, True])
+def test_trick_rejects_non_card_inputs_without_mutation(invalid_card):
+    turn_card = Card(Suits.CLUBS, "4")
+    trick = Trick(["p0", "p1"], turn_card)
+    before = list(trick.plays)
+
+    result = trick.add_play(invalid_card)
+
+    assert isinstance(result, Failure)
+    assert result.error.code is ErrorType.INVALID_CARD
+    assert trick.plays == before
+
+
 @pytest.mark.parametrize("players", [[], [ "p0" ], [ "p0", "p1", "p2" ]])
 def test_hand_rejects_empty_or_odd_player_lists(players):
     with pytest.raises(ValueError):
@@ -143,6 +156,21 @@ def test_hand_rejects_invalid_team_values(team):
 )
 def test_hand_rejects_team_mapping_with_missing_or_extra_keys(team_by_player):
     with pytest.raises(ValueError):
+        Hand(["p0", "p1"], team_by_player=team_by_player)
+
+
+@pytest.mark.parametrize(
+    "team_by_player",
+    [
+        {"p0": 0, "p1": 0},
+        {"p0": 1, "p1": 1},
+    ],
+)
+def test_hand_rejects_team_mapping_without_both_teams(team_by_player):
+    with pytest.raises(
+        ValueError,
+        match="team_by_player must include both team 0 and team 1",
+    ):
         Hand(["p0", "p1"], team_by_player=team_by_player)
 
 

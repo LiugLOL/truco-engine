@@ -1,8 +1,8 @@
 import pytest
 
-from src.core.error_types import ErrorType
-from src.core.result import Failure, Success
-from src.game.betting import Betting, RaiseResult
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, Success
+from truco_engine.game.betting import Betting, RaiseResult
 
 
 def assert_failure(result, error_type: ErrorType) -> None:

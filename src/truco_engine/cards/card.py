@@ -1,7 +1,7 @@
 """Immutable playing-card value objects."""
 
 from dataclasses import dataclass
-from src.cards.suits import Suits
+from truco_engine.cards.suits import Suits
 
 VALID_NUMBERS: tuple[str, ...] = ("4", "5", "6", "7", "Q", "J", "K", "A", "2", "3")
 

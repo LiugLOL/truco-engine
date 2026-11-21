@@ -4,10 +4,10 @@ The intended control flow is match -> hand -> trick: a match coordinates
 hands, while each hand coordinates its tricks.
 """
 from collections.abc import Callable
-from src.cards.deck import Deck
-from src.core.error_types import ErrorType
-from src.core.result import Failure, InternalError, Result, Success
-from src.game import hand, trick, betting
+from truco_engine.cards.deck import Deck
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, InternalError, Result, Success
+from truco_engine.game import hand, trick, betting
 
 def _turn_table(players_order) -> list[str]:
     return players_order[1:]+ players_order[:1]

@@ -1,7 +1,7 @@
-from src.game.trick import Trick
-from src.cards.card import Card
-from src.cards.suits import Suits
-from src.core.result import Success, Failure
+from truco_engine.game.trick import Trick
+from truco_engine.cards.card import Card
+from truco_engine.cards.suits import Suits
+from truco_engine.core.result import Success, Failure
 
 
 def players(n):

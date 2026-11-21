@@ -1,10 +1,10 @@
 """Hand lifecycle, trick rotation, and team winner resolution."""
 
-from src.cards.deck import Deck
-from src.cards.player_hand import PlayerHand
-from src.game import trick
-from src.core.error_types import ErrorType
-from src.core.result import Failure, InternalError, Result, Success
+from truco_engine.cards.deck import Deck
+from truco_engine.cards.player_hand import PlayerHand
+from truco_engine.game import trick
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, InternalError, Result, Success
 
 
 def _resolve_winner(trick_winners: list[int | None]) -> int | None:
@@ -79,6 +79,8 @@ class Hand:
             resolved_teams = dict(team_by_player)
         else:
             resolved_teams = {pid: i % 2 for i, pid in enumerate(players_order)}
+        if set(resolved_teams.values()) != {0, 1}:
+            raise ValueError("team_by_player must include both team 0 and team 1.")
 
         resolved_deck = deck if deck is not None else Deck()
         required_cards = len(players_order) * 3 + 1

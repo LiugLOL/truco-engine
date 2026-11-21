@@ -1,6 +1,6 @@
-from src.cards.card import Card
-from src.cards.deck import Deck
-from src.cards.suits import Suits
+from truco_engine.cards.card import Card
+from truco_engine.cards.deck import Deck
+from truco_engine.cards.suits import Suits
 
 
 def test_deck_contains_forty_unique_cards():

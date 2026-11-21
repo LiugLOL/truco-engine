@@ -14,10 +14,9 @@ dependencies = []
 dev = ["pytest>=8.0"]
 
 [tool.setuptools.packages.find]
-where = ["."]
-include = ["src*"]
-namespaces = true
+where = ["src"]
+include = ["truco_engine*"]
 
 [tool.pytest.ini_options]
+pythonpath = ["src"]
 testpaths = ["tests"]
-pythonpath = ["."]

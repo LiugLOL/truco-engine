@@ -1,10 +1,10 @@
 """Trick resolution, card power, and mobile-manilha rules."""
 
 from dataclasses import dataclass
-from src.cards.card import Card
-from src.cards.suits import Suits
-from src.core.error_types import ErrorType
-from src.core.result import Failure, InternalError, Result, Success
+from truco_engine.cards.card import Card
+from truco_engine.cards.suits import Suits
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, InternalError, Result, Success
 
 
 CARD_ORDER = ["4", "5", "6", "7", "Q", "J", "K", "A", "2", "3"]
@@ -112,6 +112,14 @@ class Trick:
             A success containing the play, or a failure if the trick is
             already complete.
         """
+        if not isinstance(card, Card):
+            return Failure(
+                InternalError(
+                    code=ErrorType.INVALID_CARD,
+                    message="The submitted card must be a Card instance.",
+                )
+            )
+
         player_id = self.current_player
         if player_id is None:
             return Failure(
@@ -139,4 +147,3 @@ class Trick:
         if self.result is not None or len(self.plays) >= len(self.players_order):
             return None
         return self.players_order[len(self.plays)]
-

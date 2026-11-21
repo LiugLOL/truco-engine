@@ -1,9 +1,9 @@
 """Cards currently held by an individual player."""
 
 from dataclasses import dataclass, field
-from src.cards.card import Card
-from src.core.error_types import ErrorType
-from src.core.result import Failure, InternalError, Result, Success
+from truco_engine.cards.card import Card
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, InternalError, Result, Success
 
 
 @dataclass
@@ -46,5 +46,4 @@ class PlayerHand:
                 )
             )
         return Success(self.cards.pop(index))
-
 

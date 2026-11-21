@@ -9,6 +9,7 @@ class ErrorType(Enum):
     #Card errors
     INVALID_SUIT = "invalid_suit"
     INVALID_NUMBER = "invalid_number"
+    INVALID_CARD = "invalid_card"
 
     #Hand errors
     INVALID_CARD_INDEX = "invalid_card_index"
@@ -30,4 +31,3 @@ class ErrorType(Enum):
     OUT_OF_RAISING_INDEX = "out_of_raising_index"
     NO_PENDING_RAISE = "no_pending_raise"
     PENDING_RAISE = "pending_raise"
-

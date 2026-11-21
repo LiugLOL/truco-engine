@@ -32,19 +32,21 @@ It does not include networking, UI, or application-framework dependencies.
 
 ```text
 src/
-├── cards/
-│   ├── card.py
-│   ├── deck.py
-│   ├── player_hand.py
-│   └── suits.py
-├── core/
-│   ├── error_types.py
-│   └── result.py
-└── game/
-    ├── betting.py
-    ├── hand.py
-    ├── match.py
-    └── trick.py
+└── truco_engine/
+    ├── __init__.py
+    ├── cards/
+    │   ├── card.py
+    │   ├── deck.py
+    │   ├── player_hand.py
+    │   └── suits.py
+    ├── core/
+    │   ├── error_types.py
+    │   └── result.py
+    └── game/
+        ├── betting.py
+        ├── hand.py
+        ├── match.py
+        └── trick.py
 
 tests/
 ├── test_betting.py
@@ -94,7 +96,7 @@ and adversarial public-contract boundaries.
 ## Basic Usage
 
 ```python
-from src.game.hand import Hand
+from truco_engine import Match, Hand, Card, Suits
 
 players = ["p0", "p1", "p2", "p3"]
 hand = Hand(players)
@@ -112,7 +114,7 @@ For deterministic tests, pass a deck instance to `Hand` or a deck factory to
 ```python
 hand = Hand(players, deck=my_deterministic_deck)
 
-from src.game.match import Match
+from truco_engine import Match
 
 match = Match(
     players,
@@ -126,7 +128,7 @@ hand starts.
 ## Match Usage
 
 ```python
-from src.game.match import Match
+from truco_engine import Match
 
 players = ["p0", "p1", "p2", "p3"]
 match = Match(players)

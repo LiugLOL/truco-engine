@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from typing import Generic, TypeAlias, TypeVar
-from src.core.error_types import ErrorType
+from truco_engine.core.error_types import ErrorType
 
 T = TypeVar("T")
 

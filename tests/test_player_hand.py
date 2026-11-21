@@ -1,10 +1,10 @@
 import pytest
 
-from src.cards.card import Card
-from src.cards.player_hand import PlayerHand
-from src.cards.suits import Suits
-from src.core.error_types import ErrorType
-from src.core.result import Failure, Success
+from truco_engine.cards.card import Card
+from truco_engine.cards.player_hand import PlayerHand
+from truco_engine.cards.suits import Suits
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, Success
 
 
 def test_add_card_appends_to_hand():

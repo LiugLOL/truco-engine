@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from src.core.error_types import ErrorType
-from src.core.result import Failure, InternalError, Result, Success
+from truco_engine.core.error_types import ErrorType
+from truco_engine.core.result import Failure, InternalError, Result, Success
 
 HAND_VALUES = (1, 3, 6, 9, 12)
 

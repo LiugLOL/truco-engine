@@ -35,6 +35,10 @@ def _resolve_winner(trick_winners: list[int | None]) -> int | None:
         return first
 
     # if it got here, len(trick_winners) == 3
+    prefix_winner = _resolve_winner([first, second])
+    if prefix_winner is not None:
+        return prefix_winner
+
     third = trick_winners[2]
     if third is not None:
         return third

@@ -5,6 +5,14 @@ from src.core.result import Failure, InternalError, Result, Success
 HAND_VALUES = (1, 3, 6, 9, 12)
 
 
+@dataclass(frozen=True)
+class RaiseResult:
+    pending_value: int | None
+    forfeited: bool | None
+    winner_team: int | None = None
+
+
+
 class Betting:
     def __init__(self, forfeit_on_raise: bool = False):
         self.value_index = 0
@@ -147,11 +155,6 @@ class Betting:
         }
 
 
-@dataclass(frozen=True)
-class RaiseResult:
-    pending_value: int | None
-    forfeited: bool | None
-    winner_team: int | None = None
 
 
 def _validate_team(team: int) -> Failure | None:

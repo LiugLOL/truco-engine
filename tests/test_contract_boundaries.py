@@ -54,7 +54,7 @@ def oracle(values: list[int | None]) -> int | None:
         if count >= 2:
             return team
     if first is None:
-        return third if third is not None else second
+        return second if second is not None else third
     if second is None:
         return first
     if third is None:

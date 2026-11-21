@@ -62,7 +62,8 @@ class Match:
         self.current_hand = hand.Hand(self.players_order, self.deck_factory(), team_by_player=self.team_by_player)
         self.betting = betting.Betting()
 
-    def request_raise(self, player_id: str) -> Result:
+
+    def _validate_betting_action(self, player_id: str, action: str) -> Result[int]:
         if player_id not in self.team_by_player:
             return Failure(
                 InternalError(
@@ -74,50 +75,32 @@ class Match:
             return Failure(
                 InternalError(
                     code=ErrorType.MATCH_ALREADY_FINISHED,
-                    message="Cannot request a raise in a finished match.",
+                    message=f"Cannot {action} in a finished match.",
                 )
             )
-        team = self.team_by_player[player_id]
-        result = self.betting.request_raise(team)
+        return Success(self.team_by_player[player_id])
+
+
+    def request_raise(self, player_id: str) -> Result[betting.RaiseResult]:
+        validation = self._validate_betting_action(player_id, "request a raise")
+        if isinstance(validation, Failure):
+            return validation
+        result = self.betting.request_raise(validation.value)
         if isinstance(result, Success) and result.value.forfeited:
             self._finish_hand(result.value.winner_team)
         return result
 
-    def accept_raise(self, player_id: str) -> Result:
-        if player_id not in self.team_by_player:
-            return Failure(
-                InternalError(
-                    code=ErrorType.INVALID_PLAYER,
-                    message=f"Player {player_id} is not on the game.",
-                )
-            )
-        if self.finished:
-            return Failure(
-                InternalError(
-                    code=ErrorType.MATCH_ALREADY_FINISHED,
-                    message="Cannot accept a raise in a finished match.",
-                )
-            )
-        team = self.team_by_player[player_id]
-        return self.betting.accept_raise(team)
+    def accept_raise(self, player_id: str) -> Result[int]:
+        validation = self._validate_betting_action(player_id, "accept a raise")
+        if isinstance(validation, Failure):
+            return validation
+        return self.betting.accept_raise(validation.value)
 
-    def fold_raise(self, player_id: str) -> Result:
-        if player_id not in self.team_by_player:
-            return Failure(
-                InternalError(
-                    code=ErrorType.INVALID_PLAYER,
-                    message=f"Player {player_id} is not on the game.",
-                )
-            )
-        if self.finished:
-            return Failure(
-                InternalError(
-                    code=ErrorType.MATCH_ALREADY_FINISHED,
-                    message="Cannot fold a raise in a finished match.",
-                )
-            )
-        team = self.team_by_player[player_id]
-        result = self.betting.fold_raise(team)
+    def fold_raise(self, player_id: str) -> Result[betting.RaiseResult]:
+        validation = self._validate_betting_action(player_id, "fold a raise")
+        if isinstance(validation, Failure):
+            return validation
+        result = self.betting.fold_raise(validation.value)
         if isinstance(result, Success):
             self._finish_hand(result.value.winner_team)
         return result

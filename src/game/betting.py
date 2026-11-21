@@ -1,17 +1,18 @@
+from dataclasses import dataclass
 from src.core.error_types import ErrorType
-from src.core.result import Failure, InternalError, Result, Success, RaiseResult
+from src.core.result import Failure, InternalError, Result, Success
 
 HAND_VALUES = (1, 3, 6, 9, 12)
 
 
 class Betting:
-    def __init__(self, edge_case: bool = False):
+    def __init__(self, forfeit_on_raise: bool = False):
         self.value_index = 0
         self.pending_value_index: int | None = None
         self.pending: bool = False
         self.requester_team: int | None = None
         self.last_raising_team: int | None = None
-        self.forfeit_on_raise: bool = edge_case
+        self.forfeit_on_raise: bool = forfeit_on_raise
 
     def request_raise(self, requester_team: int) -> Result:
         if self.forfeit_on_raise:
@@ -121,3 +122,10 @@ class Betting:
             ),
             "last_raising_team": self.last_raising_team,
         }
+
+
+@dataclass(frozen=True)
+class RaiseResult:
+    pending_value: int | None
+    forfeited: bool | None
+    winner_team: int | None = None

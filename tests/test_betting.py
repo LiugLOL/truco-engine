@@ -1,8 +1,8 @@
 import pytest
 
 from src.core.error_types import ErrorType
-from src.core.result import Failure, RaiseResult, Success
-from src.game.betting import Betting
+from src.core.result import Failure, Success
+from src.game.betting import Betting, RaiseResult
 
 
 def assert_failure(result, error_type: ErrorType) -> None:
@@ -150,7 +150,7 @@ def test_fold_of_six_point_reraise_preserves_three_point_value():
 
 
 def test_edge_case_raise_immediately_forfeits_to_other_team():
-    betting = Betting(edge_case=True)
+    betting = Betting(forfeit_on_raise=True)
 
     result = betting.request_raise(1)
 

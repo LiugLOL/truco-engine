@@ -71,7 +71,7 @@ def tied_deck(players: list[str] = PLAYERS) -> DeterministicDeck:
 def play_entire_hand(match: Match) -> None:
     hand = match.current_hand
     while not hand.finished:
-        order = list(hand.current_trick.current_players_order)
+        order = list(hand.current_trick.players_order)
         for player_id in order:
             result = match.play_card(player_id, 0)
             assert isinstance(result, Success)

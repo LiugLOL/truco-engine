@@ -7,7 +7,6 @@ class ErrorType(Enum):
     """Identify expected domain failures in a machine-readable form."""
 
     #Hand errors
-    CARD_NOT_FOUND = "card_not_found"
     INVALID_CARD_INDEX = "invalid_card_index"
 
     #Trick errors
@@ -26,7 +25,6 @@ class ErrorType(Enum):
     #Betting errors
     SAME_TEAM_RAISE = "same_team_raise"
     OUT_OF_RAISING_INDEX = "out_of_raising_index"
-    INVALID_RAISE = "invalid_raise"
     NO_PENDING_RAISE = "no_pending_raise"
     PENDING_RAISE = "pending_raise"
 

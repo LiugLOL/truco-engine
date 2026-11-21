@@ -59,7 +59,6 @@ class Trick:
             turn_card: Vira card that defines the mobile manilha.
         """
         self.players_order = list(players_order)
-        self.current_players_order = players_order
         self.plays: list[Card] = []
         self.manilha = self._get_manilha(turn_card)
         self.result: TrickResult | None = None
@@ -121,7 +120,7 @@ class Trick:
                 )
             )
 
-        player_id = self.players_order[len(self.plays)]
+        player_id = self.current_player
         self.plays.append(card)
 
         if len(self.plays) == len(self.players_order):
@@ -134,3 +133,11 @@ class Trick:
                 trick_result=self.result,
             )
         )
+
+    @property
+    def current_player(self) -> str | None:
+        """Return the next player expected to play, or None if finished."""
+        if self.result is not None or len(self.plays) >= len(self.players_order):
+            return None
+        return self.players_order[len(self.plays)]
+

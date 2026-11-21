@@ -106,7 +106,7 @@ Execute the test suite with pytest:
 python -m pytest
 ```
 
-The project currently contains **72 passing unit tests** covering card
+The project currently contains **72 tree /fpassing unit tests** covering card
 ranking, trick resolution, hand flow, match scoring, table rotation, validation
 failures, tie handling, mobile manilhas, match completion, betting, 2-player
 matches, and public/private state serialization.

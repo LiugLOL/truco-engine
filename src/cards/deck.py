@@ -11,7 +11,7 @@ class Deck:
 
     def __init__(self) -> None:
         """Create, populate, and shuffle a new deck."""
-        self.cards: List[Card] = []
+        self.cards: list[Card] = []
         self.create_deck()
         self.shuffle()
 
@@ -26,11 +26,11 @@ class Deck:
                 self.cards.append(Card(suit, number))
 
 
-    def shuffle(self):
+    def shuffle(self) -> None:
         """Randomize the order of the cards currently in the deck."""
         random.shuffle(self.cards)
 
 
-    def draw(self):
+    def draw(self) -> Card:
         """Remove and return the next card from the top of the deck."""
         return self.cards.pop()

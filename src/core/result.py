@@ -41,10 +41,5 @@ class Failure:
 
     error: InternalError
 
-@dataclass(frozen=True)
-class RaiseResult:
-    pending_value: int | None
-    forfeited: bool | None
-    winner_team: int | None = None
 
 Result: TypeAlias = Success[T] | Failure

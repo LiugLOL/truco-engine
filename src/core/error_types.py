@@ -6,6 +6,10 @@ from enum import Enum
 class ErrorType(Enum):
     """Identify expected domain failures in a machine-readable form."""
 
+    #Card errors
+    INVALID_SUIT = "invalid_suit"
+    INVALID_NUMBER = "invalid_number"
+
     #Hand errors
     INVALID_CARD_INDEX = "invalid_card_index"
 

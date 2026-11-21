@@ -13,9 +13,12 @@ def _turn_table(players_order) -> list[str]:
     return players_order[1:]+ players_order[:1]
 
 class Match:
+
     def __init__(self, players_order: list[str], deck_factory: Callable[[], Deck] = Deck):
-        if len(players_order)%2 != 0 or len(players_order) == 0:
+        if len(players_order) % 2 != 0 or len(players_order) == 0:
             raise ValueError("Truco requires an even and positive number of players.")
+        if len(players_order) > hand.MAX_PLAYERS:
+            raise ValueError(f"Maximum of {hand.MAX_PLAYERS} players supported.")
         if len(set(players_order)) != len(players_order):
             raise ValueError("Truco requires unique players.")
         self.deck_factory = deck_factory

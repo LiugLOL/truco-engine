@@ -41,23 +41,51 @@ def _resolve_winner(trick_winners: list[int | None]) -> int | None:
 
     return first
 
+MAX_PLAYERS = 12
 
 class Hand:
     """Manage four players, their cards, and the tricks in one hand."""
 
-    def __init__(self,
-                 players_order: list[str],
-                 deck: Deck | None = None,
-                 team_by_player:dict[str, int] | None = None,):
+    def __init__(
+            self,
+            players_order: list[str],
+            deck: Deck | None = None,
+            team_by_player: dict[str, int] | None = None,
+    ):
         """Deal cards and initialize the first trick.
 
         Args:
             players_order: Ordered player identifiers alternating by team.
             deck: Optional deck implementation used for dealing and the vira.
+            team_by_player: Optional mapping of player ID to team index (0 or 1).
         """
+        if len(players_order) < 2 or len(players_order) % 2 != 0:
+            raise ValueError("Truco requires an even and positive number of players.")
+        if len(players_order) > MAX_PLAYERS:
+            raise ValueError(f"Maximum of {MAX_PLAYERS} players supported.")
+        if len(set(players_order)) != len(players_order):
+            raise ValueError("Truco requires unique players.")
+
+        if team_by_player is not None:
+            if set(team_by_player.keys()) != set(players_order):
+                raise ValueError("team_by_player must contain the exact same players as players_order.")
+            for team in team_by_player.values():
+                if not isinstance(team, int) or isinstance(team, bool) or team not in (0, 1):
+                    raise ValueError(f"Invalid team value: {team!r}. Expected 0 or 1.")
+            resolved_teams = dict(team_by_player)
+        else:
+            resolved_teams = {pid: i % 2 for i, pid in enumerate(players_order)}
+
+        resolved_deck = deck if deck is not None else Deck()
+        required_cards = len(players_order) * 3 + 1
+        if hasattr(resolved_deck, "cards") and len(resolved_deck.cards) < required_cards:
+            raise ValueError(
+                f"Not enough cards in deck to deal the hand (required {required_cards}, got {len(resolved_deck.cards)})."
+            )
+
         self.current_players_order = list(players_order)
-        self.team_by_player = dict(team_by_player) if team_by_player is not None else {pid: i %2 for i, pid in enumerate(players_order)}
-        self.deck = deck if deck is not None else Deck()
+        self.team_by_player = resolved_teams
+        self.deck = resolved_deck
         self.hands: dict[str, PlayerHand] = {}
         for player_id in players_order:
             hand = PlayerHand()
@@ -67,7 +95,7 @@ class Hand:
 
         self.turn_card = self.deck.draw()
         self.trick_winners: list[int | None] = []
-        self.winner : int | None = None
+        self.winner: int | None = None
         self.current_trick = trick.Trick(self.current_players_order, self.turn_card)
         self.finished: bool = False
 

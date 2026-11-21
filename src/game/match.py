@@ -117,6 +117,10 @@ class Match:
                 )
             )
 
+        hand_result = self.current_hand.to_dict(player_id, blind_hand=blind_hand)
+        if isinstance(hand_result, Failure):
+            return hand_result
+
         return Success(
             {
                 "points": list(self.points),
@@ -124,6 +128,6 @@ class Match:
                 "finished": self.finished,
                 "winner": self.winner,
                 "betting": self.betting.to_dict(),
-                "hand": self.current_hand.to_dict(player_id, blind_hand=blind_hand),
+                "hand": hand_result.value,
             }
         )

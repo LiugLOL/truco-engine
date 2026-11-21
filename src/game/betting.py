@@ -14,7 +14,12 @@ class Betting:
         self.last_raising_team: int | None = None
         self.forfeit_on_raise: bool = forfeit_on_raise
 
-    def request_raise(self, requester_team: int) -> Result:
+
+    def request_raise(self, requester_team: int) -> Result[RaiseResult]:
+        invalid = _validate_team(requester_team)
+        if invalid is not None:
+            return invalid
+
         if self.forfeit_on_raise:
             return Success(RaiseResult(None, True, 1 - requester_team))
 
@@ -58,7 +63,11 @@ class Betting:
         self.requester_team = requester_team
         return Success(RaiseResult(HAND_VALUES[self.pending_value_index], False))
 
-    def accept_raise(self, responder_team: int) -> Result:
+    def accept_raise(self, responder_team: int) -> Result[RaiseResult]:
+        invalid = _validate_team(responder_team)
+        if invalid is not None:
+            return invalid
+
         if not self.pending or self.pending_value_index is None:
             return Failure(
                 InternalError(
@@ -80,7 +89,11 @@ class Betting:
         self.pending = False
         return Success(HAND_VALUES[self.value_index])
 
-    def fold_raise(self, responder_team: int) -> Result:
+    def fold_raise(self, responder_team: int) -> Result[RaiseResult]:
+        invalid = _validate_team(responder_team)
+        if invalid is not None:
+            return invalid
+
         if not self.pending:
             return Failure(
                 InternalError(
@@ -129,3 +142,14 @@ class RaiseResult:
     pending_value: int | None
     forfeited: bool | None
     winner_team: int | None = None
+
+
+def _validate_team(team: int) -> Failure | None:
+    if not isinstance(team, int) or isinstance(team, bool) or team not in (0, 1):
+        return Failure(
+            InternalError(
+                code=ErrorType.INVALID_TEAM,
+                message=f"Invalid team: {team!r}. Expected 0 or 1.",
+            )
+        )
+    return None

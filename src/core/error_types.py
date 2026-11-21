@@ -25,6 +25,7 @@ class ErrorType(Enum):
     INVALID_PLAYER = "invalid_player"
 
     #Betting errors
+    INVALID_TEAM = "invalid_team"
     SAME_TEAM_RAISE = "same_team_raise"
     OUT_OF_RAISING_INDEX = "out_of_raising_index"
     NO_PENDING_RAISE = "no_pending_raise"

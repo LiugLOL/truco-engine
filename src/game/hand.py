@@ -4,7 +4,7 @@ from src.cards.deck import Deck
 from src.cards.player_hand import PlayerHand
 from src.game import trick
 from src.core.error_types import ErrorType
-from src.core.result import Failure, InternalError, Result
+from src.core.result import Failure, InternalError, Result, Success
 
 
 def _resolve_winner(trick_winners: list[int | None]) -> int | None:
@@ -158,7 +158,14 @@ class Hand:
 
         return play_result
 
-    def to_dict(self, player_id: str, blind_hand: bool = False) -> dict:
+    def to_dict(self, player_id: str, blind_hand: bool = False) -> Result[dict]:
+        if player_id not in self.hands:
+            return Failure(
+                InternalError(
+                    code=ErrorType.INVALID_PLAYER,
+                    message=f"Player {player_id} is not in this hand.",
+                )
+            )
         current_turn = None if self.finished else self.current_trick.current_player
 
         table_cards = [
@@ -183,7 +190,8 @@ class Hand:
             for pid in self.current_players_order
         ]
 
-        return {
+        return Success(
+            {
             "vira": self.turn_card.to_dict(),
             "manilha": self.current_trick.manilha,
             "current_turn": current_turn,
@@ -194,3 +202,4 @@ class Hand:
             "my_hand": my_hand,
             "players": players,
         }
+        )

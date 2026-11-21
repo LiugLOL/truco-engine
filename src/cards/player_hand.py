@@ -20,6 +20,7 @@ class PlayerHand:
         """
         self.cards.append(card)
 
+
     def play_card(self, index: int) -> Result[Card]:
         """Remove and return a card selected by its zero-based index.
 
@@ -28,11 +29,22 @@ class PlayerHand:
 
         Returns:
             A success containing the removed card, or a failure when the index
-            is outside the hand.
+            is not an integer or is outside the hand.
         """
-        if index<0 or index>=len(self.cards):
+        if not isinstance(index, int) or isinstance(index, bool):
             return Failure(
                 InternalError(
                     code=ErrorType.INVALID_CARD_INDEX,
-                    message=f"Invalid card index {index}"))
+                    message=f"Card index must be an integer, got {type(index).__name__}.",
+                )
+            )
+        if index < 0 or index >= len(self.cards):
+            return Failure(
+                InternalError(
+                    code=ErrorType.INVALID_CARD_INDEX,
+                    message=f"Invalid card index {index}",
+                )
+            )
         return Success(self.cards.pop(index))
+
+

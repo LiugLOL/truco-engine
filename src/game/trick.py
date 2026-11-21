@@ -112,14 +112,14 @@ class Trick:
             A success containing the play, or a failure if the trick is
             already complete.
         """
-        if self.result is not None:
+        player_id = self.current_player
+        if player_id is None:
             return Failure(
                 InternalError(
                     code=ErrorType.INVALID_TRICK_RESULT,
                     message="Cannot add a play to a finished trick.",
                 )
             )
-
         player_id = self.current_player
         self.plays.append(card)
 

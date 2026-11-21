@@ -15,10 +15,8 @@ class ErrorType(Enum):
 
     #Hand errors
     NOT_PLAYER_TURN = "not_player_turn"
-    INVALID_PLAY_INDEX = "invalid_play_index"
 
     #Match errors
-    INVALID_PLAYERS_NUMBER = "invalid_players_number"
     MATCH_ALREADY_FINISHED = "match_already_finished"
     INVALID_PLAYER = "invalid_player"
 

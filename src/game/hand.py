@@ -91,7 +91,7 @@ class Hand:
                 )
             )
 
-        expected_player = self.current_trick.players_order[len(self.current_trick.plays)]
+        expected_player = self.current_trick.current_player
         if player_id != expected_player:
             return Failure(
                 InternalError(
@@ -131,11 +131,7 @@ class Hand:
         return play_result
 
     def to_dict(self, player_id: str, blind_hand: bool = False) -> dict:
-        current_turn = (
-            None
-            if self.finished
-            else self.current_trick.players_order[len(self.current_trick.plays)]
-        )
+        current_turn = None if self.finished else self.current_trick.current_player
 
         table_cards = [
             {

@@ -1,7 +1,6 @@
 """Deck construction, shuffling, and card drawing."""
 
 import random
-from typing import List
 from src.cards.card import Card
 from src.cards.suits import Suits
 
@@ -19,8 +18,8 @@ class Deck:
     def create_deck(self) -> None:
         """Populate the deck with every supported suit and rank combination."""
         self.cards.clear()
-        suits: List[Suits] = [Suits.CLUBS, Suits.DIAMONDS, Suits.HEARTS, Suits.SPADES]
-        numbers: List[str] = ["4", "5", "6", "7", "Q", "J", "K", "A", "2", "3"]
+        suits: list[Suits] = [Suits.CLUBS, Suits.DIAMONDS, Suits.HEARTS, Suits.SPADES]
+        numbers: list[str] = ["4", "5", "6", "7", "Q", "J", "K", "A", "2", "3"]
         for suit in suits:
             for number in numbers:
                 self.cards.append(Card(suit, number))

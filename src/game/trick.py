@@ -120,7 +120,6 @@ class Trick:
                     message="Cannot add a play to a finished trick.",
                 )
             )
-        player_id = self.current_player
         self.plays.append(card)
 
         if len(self.plays) == len(self.players_order):

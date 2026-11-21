@@ -1,154 +1,120 @@
 # Truco Engine
 
-A reusable, transport-independent Truco game engine for card-game applications.
+A reusable, transport-independent Python engine for Truco card games.
 
-> **Project status: under active development.** This repository is public for
-> collaboration and early testing. Core hand and match flows are implemented,
-> but the API may change as special hand rules (Mão de 11 / Mão de Ferro) are
-> completed.
+> **Project status: under active development.** Core hand and match flows,
+> betting, and match-state serialization are implemented. The API may change
+> while special hand rules such as Mão de 11 and Mão de Ferro are completed.
 
 ## Overview
 
-**Truco Engine** is a Python library that provides the core rules and state
-transitions for a Truco hand without dependencies on networking, user
-interfaces, or specific application frameworks. It deals cards, validates
-plays, resolves tricks, applies mobile-manilha rules, and determines the hand
-winner. It now also coordinates complete matches to 12 points, keeping team
-ownership stable while rotating the table between hands.
-
-The engine is designed to be:
-- **Independent**: Decoupled from networking, UI, and transport layers
-- **Modular**: Organized around cards, players, game flow, and shared results
-- **Testable**: Deterministic decks can be injected for predictable tests
+Truco Engine provides card ranking, deck and hand management, trick resolution,
+turn validation, betting escalation, match scoring, and JSON-ready match state.
+It does not include networking, UI, or application-framework dependencies.
 
 ## Features
 
-- ✅ Complete deck creation and randomized shuffling
-- ✅ Three-card hands for even players(e.g., 2 or 4 players)
-- ✅ Vira-based mobile-manilha resolution
-- ✅ Trick winner resolution with suit strength
-- ✅ Turn validation and card-index validation
-- ✅ Trick-order rotation after each winner
-- ✅ Tie handling across all three tricks
-- ✅ Typed `Success`/`Failure` results with structured error types
-- ✅ Basic 12-point match orchestration
-- ✅ Truco betting escalation (1 -> 3 -> 6 -> 9 -> 12) with accept, fold, and re-raise handling
-- ✅ Dynamic hand scoring (1, 3, 6, 9, or 12 points)
-- ✅ Hand scoring and table rotation
-- ✅ Public/private match state serialization through `Match.get_state`
-- ✅ Blind-hand serialization support for hidden/private card views
-- ✅ Stable team assignment for players after table rotations
-- ✅ Match completion and `MATCH_ALREADY_FINISHED` protection
-- ✅ Support for even player counts, including 2-player matches
-- ✅ Deterministic deck injection through `deck_factory`
-- ✅ Comprehensive unit test coverage
+- 40-card deck creation and randomized shuffling
+- Three-card hands for even player counts
+- Vira-based mobile manilhas and suit-strength ranking
+- Turn and card-index validation
+- Trick winner rotation and tie handling
+- Typed `Success` and `Failure` results with structured error types
+- 12-point match orchestration
+- Betting stakes of 1, 3, 6, 9, or 12 points
+- Accept, fold, and re-raise betting actions
+- Stable team ownership after table rotations
+- Public/private and blind-hand state serialization
+- Deterministic deck injection through `deck_factory`
+- 72 unit tests
 
 ## Project Structure
 
-```
+```text
 src/
-├── cards/                # Card and deck models
-│   ├── card.py           # Immutable Card value object
-│   ├── deck.py           # Deck creation, shuffle, and draw operations
-│   ├── player_hand.py    # Cards held by one player
-│   └── suits.py          # Card suit definitions
-├── core/                 # Shared result and error types
-│   ├── error_types.py    # Domain error categories
-│   └── result.py         # Success, Failure, and InternalError wrappers
-├── game/                 # Hand and trick orchestration
-│   ├── betting.py        # Truco bidding and raise escalation
-│   ├── hand.py           # Hand lifecycle and team winner resolution
-│   ├── match.py          # Match-level orchestration boundary
-│   └── trick.py          # Trick ranking and manilha rules
-├── players/              # Player identity models
-│   └── player.py         # Player identifier and hand association
-tests/                    # Unit tests (72 passing)
+├── cards/
+│   ├── card.py
+│   ├── deck.py
+│   ├── player_hand.py
+│   └── suits.py
+├── core/
+│   ├── error_types.py
+│   └── result.py
+└── game/
+    ├── betting.py
+    ├── hand.py
+    ├── match.py
+    └── trick.py
+
+tests/
+├── test_betting.py
+├── test_deck.py
+├── test_hand.py
+├── test_match.py
+├── test_match_betting.py
+├── test_player_hand.py
+├── test_serialization.py
+└── test_trick.py
 ```
 
 ## Installation
 
-### Clone the repository
-
 ```bash
 git clone https://github.com/LiugLOL/truco-engine.git
 cd truco-engine
-```
 
-### Create a virtual environment
-
-```bash
 python -m venv .venv
-```
 
-### Activate the virtual environment
-
-**On macOS/Linux:**
-```bash
-source .venv/bin/activate
-```
-
-**On Windows:**
-```bash
+# Windows
 .\.venv\Scripts\activate
-```
 
-### Install dependencies
+# macOS/Linux
+source .venv/bin/activate
 
-```bash
 pip install -r requirements.txt
 ```
 
 ## Running Tests
 
-Execute the test suite with pytest:
-
 ```bash
 python -m pytest
 ```
 
-The project currently contains **72 tree /fpassing unit tests** covering card
-ranking, trick resolution, hand flow, match scoring, table rotation, validation
-failures, tie handling, mobile manilhas, match completion, betting, 2-player
-matches, and public/private state serialization.
+The suite currently contains 72 tests covering cards, deck handling, player
+hands, trick ranking, hand flow, betting, match scoring, table rotation,
+two-player matches, and state serialization.
 
 ## Basic Usage
 
-The engine accepts a deck through dependency injection, which makes game setup
-and tests predictable:
-
 ```python
-from src.cards.card import Card
-from src.cards.deck import Deck
-from src.cards.suits import Suits
 from src.game.hand import Hand
 
-
-class DeterministicDeck(Deck):
-    def __init__(self, cards):
-        self.cards = list(reversed(cards))
-
-    def draw(self):
-        return self.cards.pop()
-
-
 players = ["p0", "p1", "p2", "p3"]
-cards = [
-    Card(Suits.CLUBS, "4"),
-    # Add the remaining dealt cards and the vira in draw order.
-]
+hand = Hand(players)
 
-hand = Hand(players, DeterministicDeck(cards))
 result = hand.play_card("p0", 0)
 ```
 
-`Hand.play_card` returns a typed result. Successful plays contain a
-`PlayResult`; rejected operations contain an `InternalError` with an
-`ErrorType` such as `NOT_PLAYER_TURN` or `INVALID_CARD_INDEX`.
+`Hand.play_card` returns a typed `Success` or `Failure`. Successful plays contain
+a `PlayResult`; failures contain an `InternalError` and an `ErrorType` such as
+`NOT_PLAYER_TURN` or `INVALID_CARD_INDEX`.
+
+For deterministic tests, pass a deck instance to `Hand` or a deck factory to
+`Match`:
+
+```python
+hand = Hand(players, deck=my_deterministic_deck)
+
+match = Match(
+    players,
+    deck_factory=my_deterministic_deck_factory,
+)
+```
+
+The match factory must return a fresh `Deck`-compatible instance each time a new
+hand starts.
 
 ## Match Usage
-
-`Match` coordinates hands and uses `Betting` to apply the stake of each hand.
-Hands start at 1 point and can escalate to 3, 6, 9, or 12 points:
 
 ```python
 from src.game.match import Match
@@ -159,127 +125,65 @@ match = Match(players)
 result = match.play_card("p0", 0)
 ```
 
+Hands start at 1 point and betting can raise the stake to 3, 6, 9, or 12 points.
+
 After a hand finishes:
 
-- the winning team receives the hand stake set by `Betting`;
-- tied hands do not award points;
+- the winning team receives the hand stake;
+- tied hands award no points;
 - the table rotates one position to the left;
-- a new `Hand` starts with the rotated player order;
+- a new hand starts with 1-point betting;
 - the match finishes when a team reaches 12 points.
 
-Raise requests can be accepted or folded through `Match.request_raise`,
-`Match.accept_raise`, and `Match.fold_raise`.
+Use `Match.request_raise`, `Match.accept_raise`, and `Match.fold_raise` to
+manage betting. Match constructor validation requires a non-empty, even roster
+with unique player IDs.
 
-For multiplayer transports, use `Match.get_state(player_id, blind_hand=False)`
-to receive a JSON-ready snapshot. The snapshot includes public match and table
-state plus only the requesting player's cards; all other players are represented
-by identifier and card count. Pass `blind_hand=True` to hide the requesting
-player's cards:
+For multiplayer transports, use `Match.get_state(player_id, blind_hand=False)`:
 
 ```python
 state = match.get_state("p0")
 blind_state = match.get_state("p0", blind_hand=True)
 ```
 
-For deterministic tests and controlled games, provide a `deck_factory`:
-
-```python
-match = Match(players, deck_factory=my_deterministic_deck_factory)
-```
-
-The factory must return a fresh `Deck` each time a new hand is created.
-Matches also support an even number of players, including mano-a-mano play
-with two players.
+The returned `Result` contains JSON-ready data with public match state and only
+the requesting player's private cards. In blind mode, the requesting player's
+cards are hidden. Other players are represented by ID and card count.
 
 ## Architecture
 
-The engine follows a layered game-flow architecture:
+- **Cards**: Card values, suits, deck operations, and cards held by a player
+- **Core**: Typed success/failure result and domain error types
+- **Trick**: Card comparison, manilha ranking, and trick results
+- **Hand**: Three-card hand flow, turn validation, tricks, and team winner resolution
+- **Betting**: Stake escalation and accepted, folded, and forfeited raises
+- **Match**: 12-point scoring, stable team mapping, table rotation, and completion
+- **Serialization**: JSON-ready match snapshots with private-hand isolation
 
-- **Cards**: Define cards, suits, deck operations, and player-held cards
-- **Players**: Associate a player identifier with a `PlayerHand`
-- **Hand**: Coordinates players, three tricks, turn validation, and team
-  winner resolution
-- **Trick**: Compares cards, applies the vira-defined manilha, and resolves
-  ties
-- **Betting**: Escalates hand stakes through 1, 3, 6, 9, and 12 points, and
-  handles accepted raises, folds, re-raises, and edge-case forfeits
-- **Match**: Scores hands to 12 points, rotates the table, and blocks play after
-  match completion
-- **Serialization**: Converts cards, betting, hands, and match snapshots into
-  JSON-ready primitives while restricting private hand information
-- **Core Results**: Communicate success or expected domain failures explicitly
-
-The main runtime flow is:
+The runtime flow is:
 
 1. `Hand` deals three cards to each player and draws the vira.
-2. `Hand.play_card` validates the hand state, player turn, and card index.
-3. `Trick` evaluates cards using the standard order and mobile-manilha power.
-4. `Hand` records the trick result and rotates the next trick to its winner.
-5. After two decisive tricks, or after the third trick, the hand finishes.
-6. `Match` applies the `Betting` stake to the winning team or rotates the table
-   after a tie.
-7. `Match` starts a fresh hand with 1-point stakes unless a team has reached
-   12 points.
-
-## Design Goals
-
-The Truco Engine prioritizes:
-
-- **Rule isolation**: Card ranking and hand scoring remain independent of I/O
-- **Explicit state**: Hand, trick, and result objects expose game progress
-- **Deterministic testing**: Deck injection removes randomness from scenarios
-- **Clear failures**: Invalid actions return structured domain errors
-- **Extensibility**: Match orchestration remains isolated from transport and UI
-
-## Current Status
-
-The engine currently supports complete hand and basic match lifecycles for
-even player counts. The implemented match flow is:
-
-- `points` begins at `[0, 0]`;
-- each hand winner awards the dynamic stake of 1, 3, 6, 9, or 12 points;
-- ties award no points;
-- the table rotates after every completed hand;
-- team ownership remains stable after rotation;
-- 12 points finishes the match and prevents further card plays.
-
-Issue [#1 - Add project dependencies, gitignore rules, and base unit tests](https://github.com/LiugLOL/truco-engine/issues/1)
-is closed. The repository now includes a `pytest` requirements file, dependency
-installation instructions, ignored local tool artifacts, and dedicated `Deck`
-and `PlayerHand` unit tests.
-
-Issue [#4 - Implement basic 12-point Match orchestration](https://github.com/LiugLOL/truco-engine/issues/4)
-and Issue [#2 - Implement Truco betting and raise escalation](https://github.com/LiugLOL/truco-engine/issues/2)
-are closed. Dynamic Match scoring through `Betting` and 12-point match completion
-are therefore implemented and covered by unit tests.
-
-Issue [#7 - Public/private match state serialization](https://github.com/LiugLOL/truco-engine/issues/7)
-is also closed. `Match.get_state` now provides JSON-ready public/private snapshots
-with player-specific hand visibility and blind-hand support.
-
-Issue [#8 - Preserve permanent player-to-team mapping across table rotations](https://github.com/LiugLOL/truco-engine/issues/8)
-is closed. The engine now keeps team ownership tied to player IDs across hands,
-so rotating the table no longer inverts team attribution or misassigns scores.
-`Match` validates even, non-empty rosters with unique player IDs, and multi-hand
-flows preserve correct trick winners, hand scoring, and match completion.
+2. `Hand.play_card` validates the player turn and card index.
+3. `Trick` applies the vira-defined manilhas and resolves the trick.
+4. `Hand` records trick winners and rotates the next trick.
+5. `Match` applies the current betting stake or advances the table after a tie.
+6. `Match` starts a fresh 1-point hand unless a team has reached 12 points.
 
 ## Roadmap
 
 - [x] Card, deck, suits, and player-hand models
 - [x] Trick ranking and mobile-manilha resolution
 - [x] Hand lifecycle, turn validation, rotations, and tie handling
-- [x] Basic 12-point match orchestration (#4)
+- [x] 12-point match orchestration
 - [x] Deterministic match tests with injected decks
 - [x] Truco bidding and raise escalation rules
 - [x] Public/private match state serialization for multiplayer
-- [ ] Hand of 11 and Hand of Iron (Mão de 11 / Mão de Ferro)
-- [ ] Post-MVP table rules ("3 segue" verification and "pegar pena" cut)
-- [ ] Transport/network adapters outside the core engine
+- [ ] Mão de 11 and Mão de Ferro
+- [ ] Post-MVP table rules ("3 segue" and "pegar pena")
+- [ ] Transport/network adapters
 - [ ] Package and distribution setup
-- [ ] Documentation, examples, and integration guides
+- [ ] Integration guides and examples
 
 ## License
 
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
-
----
+This project is licensed under the [MIT License](LICENSE).

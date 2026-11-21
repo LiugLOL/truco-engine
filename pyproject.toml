@@ -18,5 +18,5 @@ where = ["src"]
 include = ["truco_engine*"]
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
